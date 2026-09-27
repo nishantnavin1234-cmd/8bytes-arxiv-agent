@@ -39,6 +39,14 @@ Your briefing must contain:
 11. Suggested follow-up questions
    - Provide useful questions a reader could ask about the paper.
 
+  LIMITATIONS RULE:
+  - Only report limitations that are explicitly stated or clearly identified
+    by the paper itself.
+  - If the paper does not explicitly state any limitations, write:
+    "The paper does not explicitly state limitations."
+  - Do not add inferred weaknesses, risks, assumptions, or your own criticism
+    under the Limitations section.
+
 GROUNDING RULES:
 - Use only information supported by the provided paper text and metadata.
 - Do not invent facts, results, experiments, limitations, or conclusions.

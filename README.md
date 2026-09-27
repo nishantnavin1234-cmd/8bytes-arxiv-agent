@@ -14,7 +14,7 @@ A stateful Python agent that retrieves arXiv papers from either a research topic
 - Stores embeddings in a local FAISS vector index.
 - Generates an executive briefing using an LLM.
 - Answers follow-up questions using retrieved paper chunks.
-- Maintains conversation history in persistent agent state.
+- Maintains conversation history in shared agent state.
 - Handles retrieval, parsing, chunking, vector-store, retrieval, QA, and LLM failures gracefully.
 
 ## Architecture
@@ -152,7 +152,6 @@ The workflow stops at the failed stage rather than continuing with invalid state
 │   ├── client.py
 │   └── prompts.py
 │
-├── .env
 ├── .gitignore
 ├── main.py
 ├── requirements.txt
@@ -253,6 +252,8 @@ For a selected paper, the agent generates an executive briefing containing:
 
 The briefing prompt instructs the LLM to use only the supplied paper content and metadata and not invent unsupported information.
 
+For limitations, the system reports only limitations explicitly stated or clearly identified by the paper. If the paper does not explicitly state any limitations, it reports that no explicit limitations are stated rather than adding inferred weaknesses or criticism.
+
 ## Grounded Question Answering
 
 After the paper has been processed, questions can be answered using the same `AgentState`.
@@ -323,6 +324,20 @@ How does the paper decide when to refresh the cache?
 **Answer:**
 
 The method monitors attention patterns across decoding steps. It computes the similarity between the current and previous attention patterns and uses a threshold to determine when the cached values should be refreshed.
+
+### Example QA Exchange 3
+
+**Question:**
+
+```text
+What does this paper say about the weather in Bengaluru?
+```
+
+**Answer:**
+
+The answer is not available in the retrieved paper content.
+
+
 
 ## Design Decisions and Trade-offs
 
@@ -444,3 +459,21 @@ It intentionally does not include:
 - A full web frontend
 
 The project is designed as a lightweight CLI-based research assistant in accordance with the assessment scope.
+
+## Known Limitations
+
+- Topic selection currently uses title and abstract term overlap rather than a more advanced ranking model.
+- PDF processing relies on text extraction and may not work perfectly for scanned/image-only PDFs or unusual layouts.
+- The current parser extracts full paper text rather than building a detailed section-aware document representation.
+- The vector store exists in memory for the current session and is rebuilt when the agent starts a new run.
+- The QA system depends on semantic retrieval quality; a relevant answer can be missed if the required information is not retrieved into the top-k chunks.
+- Hosted LLM availability and free-tier rate limits can affect testing.
+
+## What I Would Improve With More Time
+
+1. Add more robust section-aware PDF parsing.
+2. Improve topic ranking using semantic similarity rather than only title/abstract term overlap.
+3. Add a retrieval-confidence threshold for QA.
+4. Add automated tests covering the complete graph and additional failure cases.
+5. Persist vector indexes and paper state between sessions.
+6. Add more robust handling for scanned PDFs and difficult document layouts.
