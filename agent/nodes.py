@@ -390,7 +390,7 @@ def qa_node(
         state = retrieve_relevant_chunks_node(
             state,
             question,
-            top_k=5,
+            top_k=3,
         )
 
         if state.status != "chunks_retrieved":
@@ -404,6 +404,9 @@ def qa_node(
         )
 
         answer = generate_response(prompt)
+
+        if not answer or not answer.strip():
+            answer = "The answer is not available in the retrieved paper content."
 
         state.conversation_history.append(
             {
